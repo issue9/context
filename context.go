@@ -51,8 +51,8 @@ func (ctx *Context) Get(key interface{}) (val interface{}, found bool) {
 	return
 }
 
-// 功能与Get()相同，在没有找到相关值的情况下，会返回def，但该真不会写
-// 入到Context中，下次用Get()依然会返回false
+// 功能与Get()相同，在没有找到相关值的情况下，会返回def，
+// 但该值不会写入到Context中，下次用Get()依然会返回false
 func (ctx *Context) MustGet(key, def interface{}) interface{} {
 	ctx.Lock()
 	defer ctx.Unlock()
