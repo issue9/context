@@ -1,6 +1,18 @@
 context [![Build Status](https://travis-ci.org/issue9/context.svg?branch=master)](https://travis-ci.org/issue9/context)
 ======
 
+```go
+func h(w http.ResponseWriter, req *http.Request) {
+    ctx := context.Get(r)
+    ctx.Set("key", "val")
+    // do something...
+    var v string
+    vi,found := ctx.Get("key")
+    if found {
+        v = vi.(string)
+    }
+}
+```
 
 ### 安装
 
