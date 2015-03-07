@@ -5,7 +5,7 @@ context [![Build Status](https://travis-ci.org/issue9/context.svg?branch=master)
 func h(w http.ResponseWriter, req *http.Request) {
     ctx := context.Get(r)
     ctx.Set("key", "val")
-    // do something...
+    // do somthing...
     var v string
     vi,found := ctx.Get("key")
     if found {
