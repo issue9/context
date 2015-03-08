@@ -16,6 +16,10 @@ var (
 
 // 获取或是新建Context
 func Get(r *http.Request) *Context {
+	if r == nil {
+		panic("参数r不能为空")
+	}
+
 	ctxsMux.Lock()
 	defer ctxsMux.Unlock()
 
@@ -30,6 +34,10 @@ func Get(r *http.Request) *Context {
 
 // 释放Context
 func Free(r *http.Request) {
+	if r == nil {
+		return
+	}
+
 	ctxsMux.Lock()
 	defer ctxsMux.Unlock()
 

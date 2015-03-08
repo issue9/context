@@ -14,13 +14,24 @@ import (
 func TestContext(t *testing.T) {
 	a := assert.New(t)
 
+	// 测试request为nil的情况
+	a.Panic(func() {
+		Get(nil)
+	})
+
 	req1, err := http.NewRequest("GET", "/abc/", nil)
-	a.NotError(err)
-	a.NotNil(req1)
+	a.NotError(err).NotNil(req1)
+	req2, err := http.NewRequest("GET", "/abc/", nil)
+	a.NotError(err).NotNil(req2)
 
 	ctx1 := Get(req1)
+	ctx2 := Get(req2)
+
+	// ctx1.Add()
 	ok := ctx1.Add("key", "val")
+	a.Equal(1, len(ctx1.items)).Equal(0, len(ctx2.items)) // 不影响ctx2
 	a.True(ok).Equal(ctx1.MustGet("key", "default").(string), "val")
+	a.Equal(ctx2.MustGet("key", "default").(string), "default")
 
 	// 添加一个相同的值，失败
 	a.False(ctx1.Add("key", "val1"))
@@ -33,11 +44,15 @@ func TestContext(t *testing.T) {
 	a.True(found).Equal(v, "val2")
 
 	// 同一个Request，应该是相同的值
-	ctx2 := Get(req1)
-	a.Equal(ctx2.MustGet("key", "default").(string), "val")
+	newCtx1 := Get(req1)
+	a.Equal(newCtx1.MustGet("key", "default").(string), "val")
+
+	// Free(nil)，应该不会释放任何内容
+	Free(nil)
+	a.Equal(2, len(ctx1.items)).Equal(0, len(ctx2.items))
 
 	Free(req1)
-
-	ctx3 := Get(req1)
-	a.Equal(ctx3.MustGet("key", "default").(string), "default")
+	Free(req2)
+	ctx1 = Get(req1)
+	a.Equal(0, len(ctx1.items)).Equal(0, len(ctx2.items))
 }
