@@ -3,7 +3,7 @@ context [![Build Status](https://travis-ci.org/issue9/context.svg?branch=master)
 
 ```go
 func h(w http.ResponseWriter, req *http.Request) {
-    ctx := context.Get(r)
+    ctx := context.Get(req)
     ctx.Set("key", "val")
     // do somthing...
     var v string

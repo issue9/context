@@ -5,7 +5,7 @@
 // context包提供了基于每个http请求期间的数据共享机制。
 //
 //  func h(w http.ResponseWriter, req *http.Request) {
-//      ctx := context.Get(r)
+//      ctx := context.Get(req)
 //      ctx.Set("key", "val")
 //      // do somthing...
 //      var v string
