@@ -14,7 +14,8 @@ var (
 	ctxsMux sync.Mutex
 )
 
-// 获取或是新建Context
+// 获取或是新建Context。
+// 当传递nil值时，会触发panic。
 func Get(r *http.Request) *Context {
 	if r == nil {
 		panic("参数r不能为空")
@@ -32,7 +33,7 @@ func Get(r *http.Request) *Context {
 	return ctx
 }
 
-// 释放Context
+// 释放Context。
 func Free(r *http.Request) {
 	if r == nil {
 		return
