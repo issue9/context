@@ -22,7 +22,6 @@ func Get(r *http.Request) *Context {
 	}
 
 	ctxsMux.Lock()
-	defer ctxsMux.Unlock()
 
 	ctx, found := ctxs[r]
 	if !found {
@@ -30,6 +29,7 @@ func Get(r *http.Request) *Context {
 		ctxs[r] = ctx
 	}
 
+	ctxsMux.Unlock() // Unlock
 	return ctx
 }
 
@@ -40,9 +40,8 @@ func Free(r *http.Request) {
 	}
 
 	ctxsMux.Lock()
-	defer ctxsMux.Unlock()
-
 	delete(ctxs, r)
+	ctxsMux.Unlock()
 }
 
 // 与http.Request相关联的上下文环境
@@ -54,9 +53,8 @@ type Context struct {
 // 查找key对应的值。在没有查到的情况下，found返回false
 func (ctx *Context) Get(key interface{}) (val interface{}, found bool) {
 	ctx.Lock()
-	defer ctx.Unlock()
-
 	val, found = ctx.items[key]
+	ctx.Unlock()
 	return
 }
 
@@ -64,9 +62,9 @@ func (ctx *Context) Get(key interface{}) (val interface{}, found bool) {
 // 但该值不会写入到Context中，下次用Get()依然会返回false
 func (ctx *Context) MustGet(key, def interface{}) interface{} {
 	ctx.Lock()
-	defer ctx.Unlock()
-
 	val, found := ctx.items[key]
+	ctx.Unlock()
+
 	if !found {
 		return def
 	} else {
@@ -77,22 +75,20 @@ func (ctx *Context) MustGet(key, def interface{}) interface{} {
 // 设置或是添加一个键值对。
 func (ctx *Context) Set(key, val interface{}) {
 	ctx.Lock()
-	defer ctx.Unlock()
-
 	ctx.items[key] = val
+	ctx.Unlock()
 }
 
 // 添加一个键值对，若该键名已经存在，则不作任何操作，
 // 并且ok返回false，表示操作没有成功
 func (ctx *Context) Add(key, val interface{}) (ok bool) {
 	ctx.Lock()
-	defer ctx.Unlock()
 
 	_, found := ctx.items[key]
-	if found {
-		return false
+	if !found {
+		ctx.items[key] = val
 	}
 
-	ctx.items[key] = val
-	return true
+	ctx.Unlock()
+	return !found
 }
