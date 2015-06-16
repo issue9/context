@@ -71,7 +71,7 @@ func BenchmarkGetFree(b *testing.B) {
 	}
 }
 
-// BenchmarkContext	 1000000	      1210 ns/op
+// BenchmarkContext	 1000000	      1675 ns/op
 func BenchmarkContext(b *testing.B) {
 	ctx := &Context{
 		items: make(map[interface{}]interface{}, 0),
@@ -79,7 +79,10 @@ func BenchmarkContext(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		ctx.Set(i, i)
+		// 应该是读多于写
 		_, found := ctx.Get(i)
+		_, found = ctx.Get(i)
+		_, found = ctx.Get(i)
 		if !found {
 			b.Error("!found")
 		}
