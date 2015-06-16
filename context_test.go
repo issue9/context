@@ -56,3 +56,32 @@ func TestContext(t *testing.T) {
 	ctx1 = Get(req1)
 	a.Equal(0, len(ctx1.items)).Equal(0, len(ctx2.items))
 }
+
+// BenchmarkGetFree	 3000000	       509 ns/op
+func BenchmarkGetFree(b *testing.B) {
+	a := assert.New(b)
+	req, err := http.NewRequest("GET", "/api", nil)
+	a.NotError(err).NotNil(req)
+
+	for i := 0; i < b.N; i++ {
+		c := Get(req)
+		if c != nil {
+			Free(req)
+		}
+	}
+}
+
+// BenchmarkContext	 1000000	      1210 ns/op
+func BenchmarkContext(b *testing.B) {
+	ctx := &Context{
+		items: make(map[interface{}]interface{}, 0),
+	}
+
+	for i := 0; i < b.N; i++ {
+		ctx.Set(i, i)
+		_, found := ctx.Get(i)
+		if !found {
+			b.Error("!found")
+		}
+	}
+}
