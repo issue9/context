@@ -13,7 +13,9 @@
 //      if found {
 //          v = vi.(string)
 //      }
+//
+//      v := ctx.MustString("key")
 //  }
 package context
 
-const Version = "0.1.1.150308"
+const Version = "0.1.2.150717"
