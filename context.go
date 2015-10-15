@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	ctxs    = make(map[*http.Request]*Context)
+	ctxs    = make(map[*http.Request]*Context, 1000)
 	ctxsMux sync.Mutex
 )
 
